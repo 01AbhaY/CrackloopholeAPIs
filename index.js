@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
 const colors = require('colors')
+const emojic = require("emojic")
 
 const userController = require('./controllers/user');
 const examController = require('./controllers/exam');
@@ -41,7 +42,7 @@ app.post('/exam/submit', examController.submitExam)
 sequelize
     .authenticate()
     .then(() => {
-        app.listen(process.env.PORT || 3005, () => console.log('-----------------------------------------------------------\nYeyeeee!! connected to DB and app is listening on port 3005'.green))
+        app.listen(process.env.PORT || 3005, () => console.log(emojic.heartEyes + '---Yeyeeee!! connected to DB and app is listening on port 3005'.green))
     })
     .catch(err => {
         console.error('Unable to connect to the database:'.red, err)
