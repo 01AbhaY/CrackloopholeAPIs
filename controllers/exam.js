@@ -1,9 +1,8 @@
 const examDetailModal = require('../modals/examDetail');
+const questionTableModal = require('../modals/questionTable');
 
 
 exports.getExam = (req, res) => {
-    const questionTableModal = require('../modals/questionTable');
-
     questionTableModal.QuestionTable(req.params.uniqueName).findAll().then((data) => {
         examDetailModal.ExamDetail.findOne({
             where: {
@@ -30,8 +29,6 @@ exports.submitExam = (req, res) => {
         negativeMarks: req.body.negativeMarks,
         noOfQuestions: req.body.noOfQuestions
     }).then((exam) => {
-        const questionTableModal = require('../modals/questionTable');
-
         questionTableModal.QuestionTable(exam.respectiveQuestionTableName).sync({
             force: true
         }).then(() => {
