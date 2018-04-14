@@ -24,7 +24,7 @@ exports.registerUser = (req, res) => {
 }
 
 exports.checkLogin = (req, res) => {
-    User.findOne({
+    userModal.User.findOne({
             where: {
                 userName: req.body.userName,
                 password: req.body.password
@@ -50,7 +50,7 @@ exports.checkLogin = (req, res) => {
 }
 
 exports.getUserByID = (req, res) => {
-    User.findOne({
+    userModal.User.findOne({
         where: {
             id: req.params.id
         }
