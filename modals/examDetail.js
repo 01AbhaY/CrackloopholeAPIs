@@ -1,19 +1,7 @@
-const Sequelize = require('sequelize')
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://abhay:mongodb@ds119489.mlab.com:19489/crackloophole');
 
-const sequelize = new Sequelize('crackloophole', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    operatorsAliases: false,
-
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-});
-
-exports.ExamDetail = sequelize.define('examDetail', {
+exports.ExamDetail = new mongoose.Schema({
     userID: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -52,4 +40,4 @@ exports.ExamDetail = sequelize.define('examDetail', {
     noOfQuestions: {
         type: Sequelize.INTEGER
     }
-})
+});
