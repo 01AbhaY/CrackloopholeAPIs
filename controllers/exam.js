@@ -2,76 +2,85 @@ const examDetailModal = require('../modals/examDetail');
 const questionTableModal = require('../modals/questionTable');
 
 
-exports.getExam = (req, res) => {
-    questionTableModal.QuestionTable(req.params.uniqueName).findAll().then((data) => {
-        examDetailModal.ExamDetail.findOne({
-            where: {
-                respectiveQuestionTableName: req.params.uniqueName
-            }
-        }).then(examDtailData => {
-            examDtailData.dataValues['questions'] = data
-            res.send(examDtailData)
-        })
-    }).catch(err => {
-        res.send(err)
-    })
+exports.submitExam = (req, res) => {
+    examDetailModal.ExamDetail.create({
+        "userID": req.body.userID,
+        "examName": req.body.examName,
+        "examDuration": req.body.examDuration,
+        "isNegativeMarking": ((req.body.hasOwnProperty("isNegativeMarking")) ? (req.body["isNegativeMarking"]["0"] == "on" ? true : false) : false),
+        "negativeMarks": req.body.negativeMarks,
+        "noOfQuestions": req.body.noOfQuestions
+    }, (err, exam) => {
 
+        if (!err && exam != null) {
+
+            try {
+                for (let i = 1; i <= req.body.noOfQuestions; i++) {
+                    let questionTableData = {}
+
+                    questionTableData['question'] = req.body["question" + i]
+                    questionTableData['image'] = ((req.body.hasOwnProperty("image" + i)) ? req.body["image" + i] : null)
+
+                    questionTableData['opt1isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt1isCorrect")) ? (req.body["q" + i + "opt1isCorrect"]["0"] == "on" ? true : false) : false)
+                    questionTableData['opt1'] = req.body["q" + i + "opt1"]
+
+                    questionTableData['opt2isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt2isCorrect")) ? (req.body["q" + i + "opt2isCorrect"]["0"] == "on" ? true : false) : false)
+                    questionTableData['opt2'] = req.body["q" + i + "opt2"]
+
+                    questionTableData['opt3isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt3isCorrect")) ? (req.body["q" + i + "opt3isCorrect"]["0"] == "on" ? true : false) : false)
+                    questionTableData['opt3'] = req.body["q" + i + "opt3"]
+
+                    questionTableData['opt4isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt4isCorrect")) ? (req.body["q" + i + "opt4isCorrect"]["0"] == "on" ? true : false) : false)
+                    questionTableData['opt4'] = req.body["q" + i + "opt4"]
+
+                    questionTableData['textAreaIsEnabled'] = ((req.body.hasOwnProperty("textArea" + i)) ? (req.body["textArea" + i]["0"] == "on" ? true : false) : false)
+
+                    questionTableModal.QuestionTable(exam._id).create(questionTableData)
+                }
+                msg = "QuestionTable created."
+            } catch (err) {
+                msg = "QuestionTable not created."
+            }
+
+            res.send({
+                "isValid": true,
+                "URL": "https://crackloophole-ui.herokuapp.com/exam-" + exam._id,
+                "isQuestionTableCreated": msg,
+                "exam": exam
+            })
+
+        } else {
+            res.send({
+                "Message": "Oops! we are unable to process this req.",
+                "error": err
+            })
+
+        }
+    })
 }
 
-exports.submitExam = (req, res) => {
+exports.getExam = (req, res) => {
+    questionTableModal.QuestionTable(req.params.examID).find({}, (err, exam) => {
+        if (!err && exam != null) {
 
-    examDetailModal.ExamDetail.create({
-        userID: req.body.userID,
-        respectiveQuestionTableName: (((req.body.examName).toLowerCase()).concat(req.body.userID)).replace(/[^a-zA-Z0-9]/g, ''),
-        examName: req.body.examName,
-        examDuration: req.body.examDuration,
-        isNegativeMarking: req.body.isNegativeMarking,
-        negativeMarks: req.body.negativeMarks,
-        noOfQuestions: req.body.noOfQuestions
-    }).then((exam) => {
-        questionTableModal.QuestionTable(exam.respectiveQuestionTableName).sync({
-            force: true
-        }).then(() => {
+            examDetailModal.ExamDetail.find({
+                "_id": req.params.examID
+            }, (err, examinerDetails) => {
 
-            for (let i = 1; i <= req.body.noOfQuestions; i++) {
-                let questionTableData = {}
-
-                questionTableData['question'] = req.body["question" + i]
-                questionTableData['image'] = ((req.body.hasOwnProperty("image" + i)) ? req.body["image" + i] : null)
-
-                questionTableData['opt1isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt1isCorrect")) ? (req.body["q" + i + "opt1isCorrect"]["0"] == "on" ? true : false) : false)
-                questionTableData['opt1'] = req.body["q" + i + "opt1"]
-
-                questionTableData['opt2isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt2isCorrect")) ? (req.body["q" + i + "opt2isCorrect"]["0"] == "on" ? true : false) : false)
-                questionTableData['opt2'] = req.body["q" + i + "opt2"]
-
-                questionTableData['opt3isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt3isCorrect")) ? (req.body["q" + i + "opt3isCorrect"]["0"] == "on" ? true : false) : false)
-                questionTableData['opt3'] = req.body["q" + i + "opt3"]
-
-                questionTableData['opt4isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt4isCorrect")) ? (req.body["q" + i + "opt4isCorrect"]["0"] == "on" ? true : false) : false)
-                questionTableData['opt4'] = req.body["q" + i + "opt4"]
-
-                questionTableData['textAreaIsEnabled'] = ((req.body.hasOwnProperty("textArea" + i)) ? (req.body["textArea" + i]["0"] == "on" ? true : false) : false)
-
-                questionTableModal.QuestionTable.create(questionTableData)
-            }
-
-        }).then((CBquestionTableData) => {
-            res.send({
-                "Message": "Thankyou! for creating exam with us.",
-                "URL": "http://abhaypratapsingh/crackloophole/" + exam.respectiveQuestionTableName
+                if (!err && exam != null) {
+                    res.send({
+                        "paperId": req.params.examID,
+                        "examinerDetails": examinerDetails,
+                        "questions": exam
+                    });
+                }
             })
-        }).catch((err) => {
-            console.log('Error while creating exam: '.red + err)
-            res.send({
-                "Message": "Oops! we are unable to process this req."
-            })
-        })
 
-    }).catch((err) => {
-        console.log('Error while creating exam: '.red + err)
-        res.send({
-            "Message": "Oops! we are unable to process this req."
-        })
+
+        } else {
+            res.send({
+                "message": "error"
+            })
+        }
     })
 }

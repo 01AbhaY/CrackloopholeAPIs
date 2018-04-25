@@ -1,33 +1,17 @@
-const Sequelize = require('sequelize')
+const mongoose = require('mongoose')
+mongoose.connect('mongodb://abhay:mongodb@ds119489.mlab.com:19489/crackloophole');
 
-const sequelize = new Sequelize('crackloophole', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    operatorsAliases: false,
-
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-});
-
-exports.User = sequelize.define('user', {
+const userTableSchema = new mongoose.Schema({
     userName: {
-        type: Sequelize.STRING,
+        type: String,
         unique: true,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
+        required: true
     },
     password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
+        type: String,
+        required: true
     },
-    Name: Sequelize.STRING
+    Name: String
 })
+
+exports.User = mongoose.model('user', userTableSchema)

@@ -1,5 +1,4 @@
 const express = require('express')
-const Sequelize = require('sequelize')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -15,35 +14,14 @@ app.use(morgan('combined'))
 app.use(cors())
 app.use(bodyParser.json())
 
-
-const sequelize = new Sequelize('crackloophole', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    operatorsAliases: false,
-
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-});
-
 app.get('/user/:id', userController.getUserByID)
 
 app.post('/user/register', userController.registerUser)
 
 app.post('/user/checklogin', userController.checkLogin)
 
-app.get('/exam/:uniqueName', examController.getExam)
+app.get('/exam/:examID', examController.getExam)
 
 app.post('/exam/submit', examController.submitExam)
 
-sequelize
-    .authenticate()
-    .then(() => {
-        app.listen(process.env.PORT || 3005, () => console.log(emojic.heartEyes + '---Yeyeeee!! connected to DB and app is listening on port 3005'.green))
-    })
-    .catch(err => {
-        console.error('Unable to connect to the database:'.red, err)
-    });
+app.listen(process.env.PORT || 3005, () => console.log(emojic.heartEyes + '---Yeyeeee!! connected to DB and app is listening on port 3005'.green))

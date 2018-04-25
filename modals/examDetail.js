@@ -1,43 +1,28 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://abhay:mongodb@ds119489.mlab.com:19489/crackloophole');
 
-exports.ExamDetail = new mongoose.Schema({
+const examDetailSchema = new mongoose.Schema({
     userID: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
+        type: String,
+        required: true
     },
     examName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
+        type: String,
+        required: true
     },
     examDuration: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
-    },
-    respectiveQuestionTableName: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-            notEmpty: true
-        }
+        type: Number,
+        required: true
     },
     isNegativeMarking: {
-        type: Sequelize.BOOLEAN
+        type: Boolean
     },
     negativeMarks: {
-        type: Sequelize.INTEGER
+        type: Number
     },
     noOfQuestions: {
-        type: Sequelize.INTEGER
+        type: Number
     }
 });
+
+exports.ExamDetail = mongoose.model('examDetail', examDetailSchema);

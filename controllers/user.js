@@ -2,11 +2,11 @@ const userModal = require('../modals/user');
 
 exports.registerUser = (req, res) => {
     userModal.User.create({
-            userName: req.body.userName,
-            password: req.body.password,
-            Name: req.body.Name
-        })
-        .then((user) => {
+        "userName": req.body.userName,
+        "password": req.body.password,
+        "Name": req.body.Name
+    }, (err, user) => {
+        if (!err && user != null) {
             res.send({
                 "Message": "Thankyou " + user.Name + " for registering with us.",
                 "ID": user.id,
@@ -14,52 +14,44 @@ exports.registerUser = (req, res) => {
                 "password": user.password,
                 "Name": user.Name
             })
-        })
-        .catch((err) => {
+        } else {
             console.log('Error While registering User: '.red + err)
             res.send({
                 "Message": "Oops! we are unable to process this req."
             })
-        })
+        }
+    })
 }
 
 exports.checkLogin = (req, res) => {
     userModal.User.findOne({
-            where: {
-                userName: req.body.userName,
-                password: req.body.password
-            }
-        })
-        .then((user) => {
+        "userName": req.body.userName,
+        "password": req.body.password
+    }, (err, doc) => {
+        if (!err && doc != null) {
             res.status(200).send({
                 "isValid": true,
-                "ID": user.id,
-                "userName": user.userName,
-                "password": user.password,
-                "Name": user.Name
+                "ID": doc.id,
+                "userName": doc.userName,
+                "password": doc.password,
+                "Name": doc.Name
             })
-        })
-        .catch((err) => {
-            console.log('Error While Verifying User: '.red.bgWhite)
-            console.log(err);
+        } else {
             res.send({
                 "isValid": false,
-                "Error": "Invalid credentials"
+                "message": "Invalid Credentials!"
             })
-        })
+        }
+    })
 }
 
 exports.getUserByID = (req, res) => {
     userModal.User.findOne({
-        where: {
-            id: req.params.id
-        }
-    }).then(user => {
-        user != null ? res.send(user) : res.send({
+        _id: req.params.id
+    }, (err, doc) => {
+        doc != null || doc != undefined ? res.send(doc) : res.send({
             "status": false,
             "message": "No user with given ID."
         })
-    }).catch(err => {
-        res.send(err)
     })
 }

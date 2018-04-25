@@ -1,80 +1,52 @@
-const Sequelize = require('sequelize')
+const mongoose = require('mongoose')
+mongoose.connect('mongodb://abhay:mongodb@ds119489.mlab.com:19489/crackloophole');
 
-const sequelize = new Sequelize('crackloophole', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    operatorsAliases: false,
-
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+const questionTableSchema = new mongoose.Schema({
+    question: {
+        type: String,
+        required: true
+    },
+    image: {
+        type: String
+    },
+    opt1: {
+        type: String,
+        required: true
+    },
+    opt1isCorrect: {
+        type: Boolean,
+        default: false
+    },
+    opt2: {
+        type: String,
+        required: true
+    },
+    opt2isCorrect: {
+        type: Boolean,
+        default: false
+    },
+    opt3: {
+        type: String,
+        required: true
+    },
+    opt3isCorrect: {
+        type: Boolean,
+        default: false
+    },
+    opt4: {
+        type: String,
+        required: true
+    },
+    opt4isCorrect: {
+        type: Boolean,
+        default: false
+    },
+    textAreaIsEnabled: {
+        type: Boolean,
+        default: false
     }
-});
+})
 
 exports.QuestionTable = (tableName) => {
-    return sequelize.define('questionTable', {
-        question: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        image: {
-            type: Sequelize.TEXT('long')
-        },
-        opt1: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        opt1isCorrect: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
-        opt2: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        opt2isCorrect: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
-        opt3: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        opt3isCorrect: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
-        opt4: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        opt4isCorrect: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
-        textAreaIsEnabled: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        }
-    }, {
-        freezeTableName: true,
-        tableName: tableName
-    })
+    return mongoose.model(tableName.toString(), questionTableSchema, tableName.toString())
 }
