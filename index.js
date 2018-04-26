@@ -12,7 +12,7 @@ const app = express()
 
 app.use(morgan('combined'))
 app.use(cors())
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '50mb'}))
 
 app.get('/user/:id', userController.getUserByID)
 

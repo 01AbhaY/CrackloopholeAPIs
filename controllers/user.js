@@ -6,8 +6,12 @@ exports.registerUser = (req, res) => {
         "password": req.body.password,
         "Name": req.body.Name
     }, (err, user) => {
+
+        console.log(user);
+
         if (!err && user != null) {
             res.send({
+                "isValid": true,
                 "Message": "Thankyou " + user.Name + " for registering with us.",
                 "ID": user.id,
                 "userName": user.userName,
@@ -17,6 +21,7 @@ exports.registerUser = (req, res) => {
         } else {
             console.log('Error While registering User: '.red + err)
             res.send({
+                "isValid": false,
                 "Message": "Oops! we are unable to process this req."
             })
         }
