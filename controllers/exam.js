@@ -45,7 +45,6 @@ exports.submitExam = (req, res) => {
 
             res.send({
                 "isValid": true,
-                "URL": "https://crackloophole-ui.herokuapp.com/exam-" + exam._id,
                 "isQuestionTableCreated": msg,
                 "exam": exam
             })
@@ -109,7 +108,6 @@ exports.getExamList = (req, res) => {
 
 }
 
-
 exports.submitStudentData = (req, res) => {
     studentDataModal.StudentData(req.body.examID + "-StudentData").create(req.body, (err, data) => {
 
@@ -127,6 +125,34 @@ exports.submitStudentData = (req, res) => {
                 "error": err
             })
 
+        }
+    })
+}
+
+exports.getExamDetailsByID = (req, res) => {
+    examDetailModal.ExamDetail.findOne({
+        "_id": req.params.examID
+    }, (err, examDetails) => {
+        if (!err && examDetails != null && examDetails.length != 0) {
+            studentDataModal.StudentData(req.params.examID + "-StudentData").find({}, (err2, studentData) => {
+                if (!err2 && studentData != null && studentData.length != 0) {
+                    res.send({
+                        "isValid": true,
+                        "examDetails": examDetails,
+                        "studentData": studentData
+                    });
+                } else {
+                    res.send({
+                        "isValid": false,
+                        "examDetails": examDetails
+                    });
+                }
+            })
+        } else {
+            res.send({
+                "isValid": false,
+                "message": "Couldn't find examDeatils for ID: " + req.params.examID
+            })
         }
     })
 }

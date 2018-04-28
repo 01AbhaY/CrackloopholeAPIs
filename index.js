@@ -12,7 +12,9 @@ const app = express()
 
 app.use(morgan('combined'))
 app.use(cors())
-app.use(bodyParser.json({limit: '50mb'}))
+app.use(bodyParser.json({
+    limit: '50mb'
+}))
 
 app.get('/user/:id', userController.getUserByID)
 
@@ -25,6 +27,8 @@ app.get('/exam/:examID', examController.getExam)
 app.post('/exam/submit', examController.submitExam)
 
 app.get('/examlist/:userID', examController.getExamList)
+
+app.get('/examDetail/:examID', examController.getExamDetailsByID)
 
 app.post('/exam/submitStudentData', examController.submitStudentData)
 
