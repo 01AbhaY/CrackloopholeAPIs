@@ -22,17 +22,15 @@ exports.submitExam = (req, res) => {
                     questionTableData['question'] = req.body["question" + i]
                     questionTableData['image'] = ((req.body.hasOwnProperty("blobImage" + i)) ? req.body["blobImage" + i] : null)
 
-                    questionTableData['opt1isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt1isCorrect")) ? (req.body["q" + i + "opt1isCorrect"]["0"] == "on" ? true : false) : false)
                     questionTableData['opt1'] = req.body["q" + i + "opt1"]
 
-                    questionTableData['opt2isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt2isCorrect")) ? (req.body["q" + i + "opt2isCorrect"]["0"] == "on" ? true : false) : false)
                     questionTableData['opt2'] = req.body["q" + i + "opt2"]
 
-                    questionTableData['opt3isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt3isCorrect")) ? (req.body["q" + i + "opt3isCorrect"]["0"] == "on" ? true : false) : false)
                     questionTableData['opt3'] = req.body["q" + i + "opt3"]
 
-                    questionTableData['opt4isCorrect'] = ((req.body.hasOwnProperty("q" + i + "opt4isCorrect")) ? (req.body["q" + i + "opt4isCorrect"]["0"] == "on" ? true : false) : false)
                     questionTableData['opt4'] = req.body["q" + i + "opt4"]
+
+                    questionTableData['optCBs'] = req.body["q" + i + "opts"]
 
                     questionTableData['textAreaIsEnabled'] = ((req.body.hasOwnProperty("textArea" + i)) ? (req.body["textArea" + i]["0"] == "on" ? true : false) : false)
 
@@ -109,23 +107,46 @@ exports.getExamList = (req, res) => {
 }
 
 exports.submitStudentData = (req, res) => {
-    studentDataModal.StudentData(req.body.examID + "-StudentData").create(req.body, (err, data) => {
 
-        if (!err && data != null) {
 
-            res.send({
-                "isValid": true,
-                "collection": req.body.examID + "-StudentData",
-                "data": data
-            })
+    questionTableModal.QuestionTable(req.body.examID).find({}, (err, questions) => {
 
-        } else {
-            res.send({
-                "Message": "Oops! we couldn't submit your exam.",
-                "error": err
-            })
+        let answers = [];
+        questions.forEach(question => {
+            answers.push({
+                "realAnswer": question.optCBs,
+                "submittedAnswer": req.body['q-' + question._id + '-opts'],
+                "isCorrect": (JSON.stringify(question.optCBs) === JSON.stringify(req.body['q-' + question._id + '-opts'])) ? true : false
+            });
+        })
 
-        }
+
+        studentDataModal.StudentData(req.body.examID + "-StudentData").create({
+            "examID": req.body.examID,
+            "nameOfStudent": req.body.nameOfStudent,
+            "rollNumber": req.body.rollNumber,
+            "branch": req.body.branch,
+            "year": req.body.year,
+            "additionalDetails": req.body.additionalDetails,
+            "answers": answers
+        }, (err, data) => {
+
+            if (!err && data != null) {
+
+                res.send({
+                    "isValid": true,
+                    "collection": req.body.examID + "-StudentData",
+                    "data": data
+                })
+
+            } else {
+                res.send({
+                    "Message": "Oops! we couldn't submit your exam.",
+                    "error": err
+                })
+
+            }
+        })
     })
 }
 

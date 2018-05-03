@@ -13,33 +13,20 @@ const questionTableSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    opt1isCorrect: {
-        type: Boolean,
-        default: false
-    },
     opt2: {
         type: String,
         required: true
-    },
-    opt2isCorrect: {
-        type: Boolean,
-        default: false
     },
     opt3: {
         type: String,
         required: true
     },
-    opt3isCorrect: {
-        type: Boolean,
-        default: false
-    },
     opt4: {
         type: String,
         required: true
     },
-    opt4isCorrect: {
-        type: Boolean,
-        default: false
+    optCBs: {
+        type: Array
     },
     textAreaIsEnabled: {
         type: Boolean,
